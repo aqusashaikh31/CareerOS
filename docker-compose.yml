@@ -1,0 +1,43 @@
+services:
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: careeros
+      POSTGRES_PASSWORD: careeros
+      POSTGRES_DB: careeros
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U careeros"]
+      interval: 5s
+      retries: 10
+
+  # Open-source LLM server. After first start run:  docker compose exec ollama ollama pull llama3.2
+  ollama:
+    image: ollama/ollama
+    volumes:
+      - ollama:/root/.ollama
+
+  app:
+    build: .
+    ports:
+      - "8501:8501"
+    env_file:
+      - .env
+    environment:
+      DATABASE_URL: postgresql+psycopg2://careeros:careeros@db:5432/careeros
+      CHROMA_DIR: /app/data/chroma
+      LLM_PROVIDER: ollama
+      OLLAMA_BASE_URL: http://ollama:11434/v1
+    depends_on:
+      db:
+        condition: service_healthy
+      ollama:
+        condition: service_started
+    volumes:
+      - chroma:/app/data/chroma
+
+volumes:
+  pgdata:
+  chroma:
+  ollama:
