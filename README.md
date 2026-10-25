@@ -22,12 +22,13 @@ streamlit run app.py
 ```
 
 If Ollama is not running the app still works in rule-based fallback mode (lower quality).
-Hosted providers (Anthropic, OpenAI, Groq...) are optional — see `.env.example`.
+Hosted providers (Anthropic, OpenAI, Groq...) are optional — 
+.
 
 ### Docker + PostgreSQL
 
 ```bash
-cp .env.example .env
+
 docker compose up --build        # app on http://localhost:8501, Postgres included
 ```
 
